@@ -31,13 +31,12 @@ BASE_URL='${proto}://${domainName}'
 API_URL='/'
 EOF
 
+    chown $serviceUser. -R /var/www
+
     cd ffplayout-frontend
 
-    npm install
-    npm run build
-
-    chown $serviceUser. -R /var/www/ffplayout-frontend
-    chown $serviceUser. -R /var/www/.npm
+    sudo -H -u $serviceUser bash -c 'npm install'
+    sudo -H -u $serviceUser bash -c 'npm run build'
 
     if [[ ! -f "$nginxConfig/ffplayout.conf" ]]; then
         cp docs/ffplayout.conf "$nginxConfig/"
