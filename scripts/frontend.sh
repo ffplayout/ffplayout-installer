@@ -13,6 +13,8 @@ if [[ ! -d "/var/www/ffplayout-frontend" ]]; then
     echo "install ffplayout-frontend"
     echo "------------------------------------------------------------------------------"
 
+    export NUXT_TELEMETRY_DISABLED=1
+
     cd /var/www
     wget https://github.com/ffplayout/ffplayout-frontend/archive/${versionFrontend}.tar.gz
     tar xf "${versionFrontend}.tar.gz"
