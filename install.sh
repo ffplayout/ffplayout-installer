@@ -89,7 +89,7 @@ if [[ ! -d /usr/local/srs ]]; then
             [Nn]* ) compileSRS="n"; break;;
             * ) (
                 echo "------------------------------------"
-                echo "Please answer yes or no!"
+                echo "Please answer y or n!"
                 echo ""
                 );;
         esac
@@ -119,6 +119,25 @@ read -p "playlist path :$ " playlistPath
 if [[ -z "$playlistPath" ]]; then
     playlistPath="/opt/playlists"
 fi
+
+echo ""
+echo "------------------------------------------------------------------------------"
+echo "do you want to run a single channel, or multi channel setup?"
+echo "------------------------------------------------------------------------------"
+echo ""
+
+while true; do
+    read -p "multi channel setup (Y/n) :$ " yn
+    case $yn in
+        [Yy]* ) setMultiChannel="y"; break;;
+        [Nn]* ) setMultiChannel="n"; break;;
+        * ) (
+            echo "------------------------------------"
+            echo "Please answer y or n!"
+            echo ""
+            );;
+    esac
+done
 
 
 ################################################################################
