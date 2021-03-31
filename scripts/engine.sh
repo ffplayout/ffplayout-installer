@@ -44,6 +44,7 @@ if [[ ! -d "/opt/ffplayout-engine" ]]; then
         sed -i "s|\"\/mediaStorage|\"$mediaPath|g" /etc/ffplayout/ffplayout-001.yml
 
         systemctl enable ffplayout-engine-multichannel.service
+        systemctl start ffplayout-engine-multichannel.service
     else
         cp ffplayout.yml /etc/ffplayout/
         mkdir /var/log/ffplayout
@@ -63,7 +64,7 @@ if [[ ! -d "/opt/ffplayout-engine" ]]; then
     chown -R $serviceUser. /etc/ffplayout
     chown -R $serviceUser. /var/log/ffplayout
     chown $serviceUser. $mediaPath
-    chown $serviceUser. $playlistPath
+    chown -R $serviceUser. $playlistPath
 
     deactivate
 fi
