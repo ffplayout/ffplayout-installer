@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # app versions (master is to unstable)
-versionApi="v3.0.0-rc1"
+versionApi="v3.0.0-rc2"
 
 timeZone=$(cat /etc/timezone)
 
@@ -30,7 +30,7 @@ if [[ ! -d "/var/www/ffplayout-api" ]]; then
 
     cd ffplayout
 
-    secret=$(python manage.py shell -c 'from django.core.management import utils; print(utils.get_random_secret_key())')
+    secret=$(python -c 'import re;from random import choice; import sys; from django.core.management import utils; sys.stdout.write(re.escape(utils.get_random_secret_key()))')
 
     sed -i "s/---a-very-important-secret-key-_-generate-it-new---/$secret/g" ffplayout/settings/production.py
     sed -i "s/'localhost'/'localhost', \'$domainName\'/g" ffplayout/settings/production.py
