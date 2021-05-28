@@ -7,18 +7,18 @@ fi
 
 versionEngine="v3.2.0"
 
-if [[ ! -d "/opt/ffplayout-engine" ]]; then
+if [[ ! -d "/opt/ffplayout_engine" ]]; then
     echo ""
     echo "------------------------------------------------------------------------------"
     echo "install ffplayout engine"
     echo "------------------------------------------------------------------------------"
 
     cd /opt
-    wget https://github.com/ffplayout/ffplayout-engine/archive/${versionEngine}.tar.gz
+    wget https://github.com/ffplayout/ffplayout_engine/archive/${versionEngine}.tar.gz
     tar xf "${versionEngine}.tar.gz"
-    mv "ffplayout-engine-${versionEngine#'v'}" 'ffplayout-engine'
+    mv "ffplayout_engine-${versionEngine#'v'}" 'ffplayout_engine'
     rm "${versionEngine}.tar.gz"
-    cd ffplayout-engine
+    cd ffplayout_engine
 
     virtualenv -p python3 venv
     source ./venv/bin/activate
