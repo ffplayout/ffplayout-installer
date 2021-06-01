@@ -43,8 +43,6 @@ if [[ ! -d "/var/www/ffplayout-api" ]]; then
     else
 
         sed -i "s/ffplayout-001.yml/ffplayout.yml/g" ../docs/db_data.json
-        sed -i "s|/etc/ffplayout/supervisor/conf.d/engine-001.conf||g" ../docs/db_data.json
-
         sed -i "s|USE_SOCKET = True|USE_SOCKET = False|g" ffplayout/settings/common.py
     fi
 
