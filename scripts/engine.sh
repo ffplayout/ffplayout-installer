@@ -5,7 +5,7 @@ if [[ $(whoami) != 'root' ]]; then
     exit 1
 fi
 
-versionEngine="v3.2.0"
+versionEngine="v3.3.0"
 
 if [[ ! -d "/opt/ffplayout_engine" ]]; then
     echo ""
