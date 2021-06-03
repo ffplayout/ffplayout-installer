@@ -160,8 +160,8 @@ source $CURRENTPATH/scripts/engine.sh
 source $CURRENTPATH/scripts/api.sh
 source $CURRENTPATH/scripts/frontend.sh
 
-if ! grep -q "ffplayout-engine.service" "/etc/sudoers"; then
-  echo "$serviceUser  ALL = NOPASSWD: /bin/systemctl start ffplayout-engine.service, /bin/systemctl stop ffplayout-engine.service, /bin/systemctl reload ffplayout-engine.service, /bin/systemctl restart ffplayout-engine.service, /bin/systemctl status ffplayout-engine.service, /bin/systemctl is-active ffplayout-engine.service, /bin/journalctl -n 1000 -u ffplayout-engine.service" >> /etc/sudoers
+if ! grep -q "ffplayout_engine.service" "/etc/sudoers"; then
+  echo "$serviceUser  ALL = NOPASSWD: /bin/systemctl start ffplayout_engine.service, /bin/systemctl stop ffplayout_engine.service, /bin/systemctl reload ffplayout_engine.service, /bin/systemctl restart ffplayout_engine.service, /bin/systemctl status ffplayout_engine.service, /bin/systemctl is-active ffplayout_engine.service, /bin/journalctl -n 1000 -u ffplayout_engine.service" >> /etc/sudoers
 fi
 
 if [[ "$(grep -Ei 'centos|fedora' /etc/*release)" ]]; then
