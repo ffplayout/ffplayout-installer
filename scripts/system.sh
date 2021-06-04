@@ -8,7 +8,7 @@ fi
 # get sure that we have our correct PATH
 export PATH=$PATH:/usr/local/bin
 
-if ! nginx -t &> /dev/null; then
+if [[ ! $installNginx ]] && ! nginx -t &> /dev/null; then
     echo ""
     echo "------------------------------------------------------------------------------"
     echo "install and setup nginx:"
