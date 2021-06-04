@@ -39,11 +39,11 @@ if [[ ! -d "/var/www/ffplayout-api" ]]; then
     sed -i "s/localhost/$domainName/g" ../docs/db_data.json
 
     if [[ $setMultiChannel == 'y' ]]; then
-        sed -i "s|USE_SOCKET = False|USE_SOCKET = True|g" ffplayout/settings/common.py
+        sed -i "s|MULTI_CHANNEL = False|MULTI_CHANNEL = True|g" ffplayout/settings/common.py
     else
 
         sed -i "s/ffplayout-001.yml/ffplayout.yml/g" ../docs/db_data.json
-        sed -i "s|USE_SOCKET = True|USE_SOCKET = False|g" ffplayout/settings/common.py
+        sed -i "s|MULTI_CHANNEL = True|MULTI_CHANNEL = False|g" ffplayout/settings/common.py
     fi
 
     python manage.py makemigrations && python manage.py migrate
