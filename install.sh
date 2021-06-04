@@ -6,6 +6,8 @@ while [[ $# -gt 0 ]] && [[ "$1" == "--"* ]]; do
     case "$opt" in
         --domain=* )
            domainName="${opt#*=}";;
+        --nginx=* )
+           installNginx="${opt#*=}";;
         --https* )
            useHTTPS="${opt#*=}";;
         --ffmpeg=* )
