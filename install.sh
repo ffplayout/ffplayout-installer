@@ -1,6 +1,46 @@
 #!/usr/bin/env bash
 
-versionFrontend="v2.1.0"
+while [[ $# -gt 0 ]] && [[ "$1" == "--"* ]]; do
+    opt="$1";
+    shift;
+    case "$opt" in
+        --domain=* )
+           domainName="${opt#*=}";;
+        --https* )
+           useHTTPS="${opt#*=}";;
+        --ffmpeg=* )
+           compileFFmpeg="${opt#*=}";;
+        --srs=* )
+           compileSRS="${opt#*=}";;
+        --media=* )
+           mediaPath="${opt#*=}";;
+        --playlist=* )
+           playlistPath="${opt#*=}";;
+        --channels=* )
+           setMultiChannel="${opt#*=}";;
+        --master=* )
+           srcFromMaster="${opt#*=}";;
+        --help )
+           showHelp=true;;
+        *);;
+   esac
+done
+
+if [[ $showHelp ]]; then
+    echo "-------------------------------------------------------------"
+    echo "ffplayout installer, run with parameters:"
+    echo
+    echo '--domain=[domain name] # add domain or IP'
+    echo '--https=[y/n]          # use https'
+    echo '--ffmpeg=[y/n]         # compile ffmpeg'
+    echo '--srs=[y/n]            # compile srs rtmp server'
+    echo '--media=[path]         # path to media store'
+    echo '--playlist=[path]      # path to playlist store'
+    echo '--channels=[y/n]       # use single or multiple channels'
+    echo '--master=[y/n]         # get sources from master branch'
+
+    exit 0
+fi
 
 if [[ $(whoami) != 'root' ]]; then
     echo "This script must run under root!"
@@ -18,44 +58,48 @@ export PATH=$PATH:/usr/local/bin
 
 CURRENTPATH=$PWD
 
-echo ""
-echo "------------------------------------------------------------------------------"
-echo "ffplayout domain name (like: example.org), or IP"
-echo "------------------------------------------------------------------------------"
-echo ""
+if [[ ! $domainName ]]; then
+    echo ""
+    echo "------------------------------------------------------------------------------"
+    echo "ffplayout domain name (like: example.org), or IP"
+    echo "------------------------------------------------------------------------------"
+    echo ""
 
-while true; do
-    read -p "domain name :$ " domainName
+    while true; do
+        read -p "domain name :$ " domainName
 
-    if [[ -z "$domainName" ]]; then
-        echo "------------------------------------"
-        echo "Please type a domain name or IP!"
-        echo ""
-    else
-        break
-    fi
-done
-
-echo ""
-echo "------------------------------------------------------------------------------"
-echo "are you implement your https certficate after installation?"
-echo "------------------------------------------------------------------------------"
-echo ""
-
-while true; do
-    read -p "Do you use https? (Y/n) :$ " yn
-    case $yn in
-        [Yy]* ) useHTTPS="y"; break;;
-        [Nn]* ) useHTTPS="n"; break;;
-        * ) (
+        if [[ -z "$domainName" ]]; then
             echo "------------------------------------"
-            echo "Please answer yes or no!"
+            echo "Please type a domain name or IP!"
             echo ""
-            );;
-    esac
-done
+        else
+            break
+        fi
+    done
+fi
 
-if ! ffmpeg -version &> /dev/null; then
+if [[ ! $useHTTPS ]]; then
+    echo ""
+    echo "------------------------------------------------------------------------------"
+    echo "are you implement your https certficate after installation?"
+    echo "------------------------------------------------------------------------------"
+    echo ""
+
+    while true; do
+        read -p "Do you use https? (Y/n) :$ " yn
+        case $yn in
+            [Yy]* ) useHTTPS="y"; break;;
+            [Nn]* ) useHTTPS="n"; break;;
+            * ) (
+                echo "------------------------------------"
+                echo "Please answer yes or no!"
+                echo ""
+                );;
+        esac
+    done
+fi
+
+if [[ ! $compileFFmpeg ]] && ! ffmpeg -version &> /dev/null; then
     echo ""
     echo "------------------------------------------------------------------------------"
     echo "compile and install (nonfree) ffmpeg:"
@@ -75,7 +119,7 @@ if ! ffmpeg -version &> /dev/null; then
     done
 fi
 
-if [[ ! -d /usr/local/srs ]]; then
+if [[ ! $compileSRS ]] && [[ ! -d /usr/local/srs ]]; then
     echo ""
     echo "------------------------------------------------------------------------------"
     echo "install and srs rtmp/hls server:"
@@ -95,49 +139,54 @@ if [[ ! -d /usr/local/srs ]]; then
     done
 fi
 
-echo ""
-echo "------------------------------------------------------------------------------"
-echo "path to media storage, default: /opt/tv-media"
-echo "------------------------------------------------------------------------------"
-echo ""
+if [[ ! $mediaPath ]]; then
+    echo ""
+    echo "------------------------------------------------------------------------------"
+    echo "path to media storage, default: /opt/tv-media"
+    echo "------------------------------------------------------------------------------"
+    echo ""
 
-read -p "media path :$ " mediaPath
+    read -p "media path :$ " mediaPath
 
-if [[ -z "$mediaPath" ]]; then
-    mediaPath="/opt/tv-media"
+    if [[ -z "$mediaPath" ]]; then
+        mediaPath="/opt/tv-media"
+    fi
 fi
 
-echo ""
-echo "------------------------------------------------------------------------------"
-echo "playlist path, default: /opt/playlists"
-echo "------------------------------------------------------------------------------"
-echo ""
+if [[ ! $playlistPath ]]; then
+    echo ""
+    echo "------------------------------------------------------------------------------"
+    echo "playlist path, default: /opt/playlists"
+    echo "------------------------------------------------------------------------------"
+    echo ""
 
-read -p "playlist path :$ " playlistPath
+    read -p "playlist path :$ " playlistPath
 
-if [[ -z "$playlistPath" ]]; then
-    playlistPath="/opt/playlists"
+    if [[ -z "$playlistPath" ]]; then
+        playlistPath="/opt/playlists"
+    fi
 fi
 
-echo ""
-echo "------------------------------------------------------------------------------"
-echo "do you want to run a single channel, or multi channel setup?"
-echo "------------------------------------------------------------------------------"
-echo ""
+if [[ ! $setMultiChannel ]]; then
+    echo ""
+    echo "------------------------------------------------------------------------------"
+    echo "do you want to run a single channel, or multi channel setup?"
+    echo "------------------------------------------------------------------------------"
+    echo ""
 
-while true; do
-    read -p "multi channel setup (Y/n) :$ " yn
-    case $yn in
-        [Yy]* ) setMultiChannel="y"; break;;
-        [Nn]* ) setMultiChannel="n"; break;;
-        * ) (
-            echo "------------------------------------"
-            echo "Please answer y or n!"
-            echo ""
-            );;
-    esac
-done
-
+    while true; do
+        read -p "multi channel setup (Y/n) :$ " yn
+        case $yn in
+            [Yy]* ) setMultiChannel="y"; break;;
+            [Nn]* ) setMultiChannel="n"; break;;
+            * ) (
+                echo "------------------------------------"
+                echo "Please answer y or n!"
+                echo ""
+                );;
+        esac
+    done
+fi
 
 ################################################################################
 ## Install functions
