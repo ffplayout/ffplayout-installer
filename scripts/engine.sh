@@ -30,7 +30,7 @@ if [[ ! -d "/opt/ffplayout_engine" ]]; then
 
     if [[ $setMultiChannel == 'y' ]]; then
         cp ffplayout.yml /etc/ffplayout/ffplayout-001.yml
-        cp -r supervisor /etc/ffplayout/
+        cp -r docs/supervisor /etc/ffplayout/
         mkdir -p $playlistPath/channel-001
 
         mkdir -p /var/log/ffplayout/channel-001
