@@ -16,10 +16,15 @@ if [[ ! -d "/var/www/ffplayout-frontend" ]]; then
     export NUXT_TELEMETRY_DISABLED=1
 
     cd /var/www
-    wget https://github.com/ffplayout/ffplayout-frontend/archive/${versionFrontend}.tar.gz
-    tar xf "${versionFrontend}.tar.gz"
-    mv "ffplayout-frontend-${versionFrontend#'v'}" 'ffplayout-frontend'
-    rm "${versionFrontend}.tar.gz"
+
+    if [[ $srcFromMaster == 'y' ]]; then
+        git clone https://github.com/ffplayout/ffplayout-frontend.git
+    else
+        wget https://github.com/ffplayout/ffplayout-frontend/archive/${versionFrontend}.tar.gz
+        tar xf "${versionFrontend}.tar.gz"
+        mv "ffplayout-frontend-${versionFrontend#'v'}" 'ffplayout-frontend'
+        rm "${versionFrontend}.tar.gz"
+    fi
 
     ln -s "$mediaPath" /var/www/ffplayout-frontend/static/
 

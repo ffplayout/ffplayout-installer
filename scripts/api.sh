@@ -17,10 +17,16 @@ if [[ ! -d "/var/www/ffplayout-api" ]]; then
     echo "------------------------------------------------------------------------------"
 
     cd /var/www
-    wget https://github.com/ffplayout/ffplayout-api/archive/${versionApi}.tar.gz
-    tar xf "${versionApi}.tar.gz"
-    mv "ffplayout-api-${versionApi#'v'}" 'ffplayout-api'
-    rm "${versionApi}.tar.gz"
+
+    if [[ $srcFromMaster == 'y' ]]; then
+        git clone https://github.com/ffplayout/ffplayout-api.git
+    else
+        wget https://github.com/ffplayout/ffplayout-api/archive/${versionApi}.tar.gz
+        tar xf "${versionApi}.tar.gz"
+        mv "ffplayout-api-${versionApi#'v'}" 'ffplayout-api'
+        rm "${versionApi}.tar.gz"
+    fi
+
     cd ffplayout-api
 
     virtualenv -p python3 venv

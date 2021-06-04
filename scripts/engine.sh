@@ -14,10 +14,16 @@ if [[ ! -d "/opt/ffplayout_engine" ]]; then
     echo "------------------------------------------------------------------------------"
 
     cd /opt
-    wget https://github.com/ffplayout/ffplayout_engine/archive/${versionEngine}.tar.gz
-    tar xf "${versionEngine}.tar.gz"
-    mv "ffplayout_engine-${versionEngine#'v'}" 'ffplayout_engine'
-    rm "${versionEngine}.tar.gz"
+
+    if [[ $srcFromMaster == 'y' ]]; then
+        git clone https://github.com/ffplayout/ffplayout_engine.git
+    else
+        wget https://github.com/ffplayout/ffplayout_engine/archive/${versionEngine}.tar.gz
+        tar xf "${versionEngine}.tar.gz"
+        mv "ffplayout_engine-${versionEngine#'v'}" 'ffplayout_engine'
+        rm "${versionEngine}.tar.gz"
+    fi
+
     cd ffplayout_engine
 
     virtualenv -p python3 venv
