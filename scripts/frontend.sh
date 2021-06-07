@@ -13,8 +13,6 @@ if [[ ! -d "/var/www/ffplayout-frontend" ]]; then
     echo "install ffplayout-frontend"
     echo "------------------------------------------------------------------------------"
 
-    export NUXT_TELEMETRY_DISABLED=1
-
     cd /var/www
 
     if [[ $srcFromMaster == 'y' ]]; then
@@ -34,6 +32,7 @@ if [[ ! -d "/var/www/ffplayout-frontend" ]]; then
         proto='http'
     fi
 cat <<EOF > "ffplayout-frontend/.env"
+NUXT_TELEMETRY_DISABLED=1
 BASE_URL='${proto}://${domainName}'
 API_URL='/'
 EOF
