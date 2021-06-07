@@ -37,6 +37,7 @@ if [[ $showHelp ]]; then
     echo "ffplayout installer, run with parameters:"
     echo
     echo '--domain=[domain name] # add domain or IP'
+    echo '--nginx=[y/n]          # install nginx'
     echo '--https=[y/n]          # use https'
     echo '--ffmpeg=[y/n]         # compile ffmpeg'
     echo '--srs=[y/n]            # compile srs rtmp server'
@@ -50,7 +51,7 @@ if [[ $showHelp ]]; then
     exit 0
 fi
 
-if [[ -d .git ]] && [[ ! $srcFromMaster ]]; then
+if [[ -d .git ]] && [ -z ${srcFromMaster+x} ]; then
     echo "-------------------------------------------------------------"
     echo "WARNING: you are running the installer from git master branch!"
     echo "This version pulls all ffplayout tools also from there master branches,"
