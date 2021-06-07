@@ -22,6 +22,10 @@ while [[ $# -gt 0 ]] && [[ "$1" == "--"* ]]; do
            setMultiChannel="${opt#*=}";;
         --master=* )
            srcFromMaster="${opt#*=}";;
+        --user=* )
+           username="${opt#*=}";;
+        --password=* )
+           password="${opt#*=}";;
         --help )
            showHelp=true;;
         *);;
@@ -40,9 +44,35 @@ if [[ $showHelp ]]; then
     echo '--playlist=[path]      # path to playlist store'
     echo '--channels=[y/n]       # use single or multiple channels'
     echo '--master=[y/n]         # get sources from master branch'
+    echo '--user=[username]      # set user for authentication'
+    echo '--password=[password]  # set password for authentication'
 
     exit 0
 fi
+
+if [[ -d .git ]] && [[ ! $srcFromMaster ]]; then
+    echo "-------------------------------------------------------------"
+    echo "WARNING: you are running the installer from git master branch!"
+    echo "This version pulls all ffplayout tools also from there master branches,"
+    echo "which can be instable and is not recomment in production!"
+    echo ""
+    echo "Are you sure that you want to continue?"
+
+    while true; do
+        read -p "Contiune? (Y/n) :$ " yn
+        case $yn in
+            [Yy]* ) srcFromMaster="y"; break;;
+            [Nn]* ) exit;;
+            * ) (
+                echo "------------------------------------"
+                echo "Please answer yes or no!"
+                echo ""
+                );;
+        esac
+    done
+fi
+
+exit
 
 if [[ $(whoami) != 'root' ]]; then
     echo "This script must run under root!"
