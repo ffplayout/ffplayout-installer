@@ -17,7 +17,7 @@ There is also a automated installation mode, where you can pass all values as an
 ```bash
 ./install.sh \
     --domain=[domain name or IP] \
-    --nginx=[y/n \
+    --nginx=[y/n] \
     --https=[y/n] \
     --ffmpeg=[y/n] \
     --srs=[y/n] \
