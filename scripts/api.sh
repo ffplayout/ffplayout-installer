@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # app versions (master is to unstable)
-versionApi="v3.0.1"
+versionApi="v3.1.0"
 
 timeZone=$(cat /etc/timezone)
 
