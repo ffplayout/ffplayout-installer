@@ -55,7 +55,12 @@ if [[ ! -d "/var/www/ffplayout-api" ]]; then
     python manage.py makemigrations && python manage.py migrate
     python manage.py collectstatic
     python manage.py loaddata ../docs/db_data.json
-    python manage.py createsuperuser
+
+    if [[ $username ]] && [[ $password ]]; then
+        echo "from django.contrib.auth.models import User; User.objects.create_superuser(\"$username\", '', \"$password\")" | python manage.py shell
+    else
+        python manage.py createsuperuser
+    fi
 
     deactivate
 
