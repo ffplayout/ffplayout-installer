@@ -72,8 +72,6 @@ if [[ -d .git ]] && [[ ! $srcFromMaster ]]; then
     done
 fi
 
-exit
-
 if [[ $(whoami) != 'root' ]]; then
     echo "This script must run under root!"
     exit 1
