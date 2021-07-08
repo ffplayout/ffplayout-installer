@@ -22,6 +22,8 @@ if [[ ! -d "/var/www/ffplayout-frontend" ]]; then
         tar xf "${versionFrontend}.tar.gz"
         mv "ffplayout-frontend-${versionFrontend#'v'}" 'ffplayout-frontend'
         rm "${versionFrontend}.tar.gz"
+
+        echo $versionFrontend > ffplayout-frontend/.version
     fi
 
     ln -s "$mediaPath" /var/www/ffplayout-frontend/static/
@@ -58,4 +60,47 @@ EOF
     fi
 
     systemctl reload nginx
+elif [[ $update ]]; then
+    echo ""
+    echo "------------------------------------------------------------------------------"
+    echo "update ffplayout-frontend"
+    echo "------------------------------------------------------------------------------"
+
+    cd /var/www
+
+    if [[ $srcFromMaster == 'y' ]]; then
+        cd ffplayout-frontend
+        git fetch
+
+        if [[ $(git rev-parse HEAD) == $(git rev-parse @{u}) ]]; then
+            echo "------------------------------------------------------------------------------"
+            echo "ffplayout-frontend is up to date"
+            echo "------------------------------------------------------------------------------"
+            return
+        fi
+
+        git pull
+    else
+        if [[ $versionFrontend == $(cat ffplayout-frontend/.version) ]]; then
+            echo "------------------------------------------------------------------------------"
+            echo "ffplayout-frontend is up to date"
+            echo "------------------------------------------------------------------------------"
+            return
+        else
+            echo $versionFrontend > ffplayout-frontend/.version
+        fi
+        mv ffplayout-frontend/.env .
+
+        wget https://github.com/ffplayout/ffplayout-frontend/archive/${versionFrontend}.tar.gz
+        tar xf "${versionFrontend}.tar.gz"
+        yes | cp -rf ffplayout-frontend-${versionFrontend#'v'}/* ffplayout-frontend/
+        rm "${versionFrontend}.tar.gz"
+
+        mv .env ffplayout-frontend/
+        cd ffplayout-frontend
+    fi
+
+    chown $serviceUser. -R /var/www/ffplayout-frontend
+    sudo -H -u $serviceUser bash -c 'npm install'
+    sudo -H -u $serviceUser bash -c 'npm run build'
 fi

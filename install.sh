@@ -26,6 +26,8 @@ while [[ $# -gt 0 ]] && [[ "$1" == "--"* ]]; do
            username="${opt#*=}";;
         --password=* )
            password="${opt#*=}";;
+        --update )
+           update=true;;
         --help )
            showHelp=true;;
         *);;
@@ -47,6 +49,7 @@ if [[ $showHelp ]]; then
     echo '--master=[y/n]         # get sources from master branch'
     echo '--user=[username]      # set user for authentication'
     echo '--password=[password]  # set password for authentication'
+    echo '--help                 # show this help'
 
     exit 0
 fi

@@ -5,21 +5,22 @@ if [[ $(whoami) != 'root' ]]; then
     exit 1
 fi
 
-echo ""
-echo "------------------------------------------------------------------------------"
-echo "compile and install ffmpeg"
-echo "------------------------------------------------------------------------------"
 cd /opt/
 
 if [[ ! -d "ffmpeg-build" ]]; then
     git clone https://github.com/jb-alvarado/compile-ffmpeg-osx-linux.git ffmpeg-build
     cd ffmpeg-build
-else
+elif [[ $update ]]; then
     cd ffmpeg-build
     git pull
-
-    rm -rf build local
+else
+    return
 fi
+
+echo ""
+echo "------------------------------------------------------------------------------"
+echo "compile and install ffmpeg"
+echo "------------------------------------------------------------------------------"
 
 if [[ ! -f "build_config.txt" ]]; then
 cat <<EOF > "build_config.txt"
@@ -48,11 +49,13 @@ cat <<EOF > "build_config.txt"
 #--enable-opengl
 #--enable-openssl
 #--enable-libsvtav1
+#--enable-librav1e
 EOF
-    sed -i 's/mediainfo="yes"/mediainfo="no"/g' ./compile-ffmpeg.sh
-    sed -i 's/mp4box="yes"/mp4box="no"/g' ./compile-ffmpeg.sh
 fi
+
+sed -i 's/mediainfo="yes"/mediainfo="no"/g' ./compile-ffmpeg.sh
+sed -i 's/mp4box="yes"/mp4box="no"/g' ./compile-ffmpeg.sh
 
 ./compile-ffmpeg.sh
 
-cp local/bin/ff* /usr/local/bin/
+cp -rf local/bin/ff* /usr/local/bin/

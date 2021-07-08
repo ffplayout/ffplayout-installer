@@ -25,6 +25,8 @@ if [[ ! -d "/var/www/ffplayout-api" ]]; then
         tar xf "${versionApi}.tar.gz"
         mv "ffplayout-api-${versionApi#'v'}" 'ffplayout-api'
         rm "${versionApi}.tar.gz"
+
+        echo $versionApi > ffplayout-api/.version
     fi
 
     cd ffplayout-api
@@ -75,4 +77,66 @@ if [[ ! -d "/var/www/ffplayout-api" ]]; then
 
     systemctl enable ffplayout-api.service
     systemctl start ffplayout-api.service
+
+elif [[ $update ]]; then
+    echo ""
+    echo "------------------------------------------------------------------------------"
+    echo "update ffplayout-api"
+    echo "------------------------------------------------------------------------------"
+
+    cd /var/www
+
+    if [[ $srcFromMaster == 'y' ]]; then
+        cd ffplayout-api
+        git fetch
+
+        if [[ $(git rev-parse HEAD) == $(git rev-parse @{u}) ]]; then
+            echo "------------------------------------------------------------------------------"
+            echo "ffplayout-api is up to date"
+            echo "------------------------------------------------------------------------------"
+            return
+        fi
+
+        git pull
+    else
+        if [[ $versionApi == $(cat ffplayout-api/.version) ]]; then
+            echo "------------------------------------------------------------------------------"
+            echo "ffplayout-api is up to date"
+            echo "------------------------------------------------------------------------------"
+            return
+        else
+            echo $versionApi > ffplayout-api/.version
+        fi
+        mv ffplayout-api/ffplayout/ffplayout/settings/production.py .
+
+        wget https://github.com/ffplayout/ffplayout-api/archive/${versionApi}.tar.gz
+        tar xf "${versionApi}.tar.gz"
+        yes | cp -rf ffplayout-api-${versionApi#'v'}/* ffplayout-api/
+        rm "${versionApi}.tar.gz"
+
+        mv production.py ffplayout-api/ffplayout/ffplayout/settings/
+        cd ffplayout-api
+    fi
+
+    source ./venv/bin/activate
+    pip install --upgrade -r requirements-base.txt
+
+    cd ffplayout
+
+    sed -i "s|TIME_ZONE = 'UTC'|TIME_ZONE = '$timeZone'|g" ffplayout/settings/common.py
+
+    if [[ $setMultiChannel == 'y' ]]; then
+        sed -i "s|MULTI_CHANNEL = False|MULTI_CHANNEL = True|g" ffplayout/settings/common.py
+    else
+        sed -i "s|MULTI_CHANNEL = True|MULTI_CHANNEL = False|g" ffplayout/settings/common.py
+    fi
+
+    python manage.py makemigrations && python manage.py migrate
+    python manage.py collectstatic --noinput
+
+    deactivate
+
+    chown $serviceUser. -R /var/www/ffplayout-api
+
+    systemctl restart ffplayout-api.service
 fi

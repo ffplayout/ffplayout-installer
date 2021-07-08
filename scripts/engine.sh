@@ -22,6 +22,8 @@ if [[ ! -d "/opt/ffplayout_engine" ]]; then
         tar xf "${versionEngine}.tar.gz"
         mv "ffplayout_engine-${versionEngine#'v'}" 'ffplayout_engine'
         rm "${versionEngine}.tar.gz"
+
+        echo $versionEngine > ffplayout_engine/.version
     fi
 
     cd ffplayout_engine
@@ -73,4 +75,51 @@ if [[ ! -d "/opt/ffplayout_engine" ]]; then
     chown -R $serviceUser. $playlistPath
 
     deactivate
+elif [[ $update ]]; then
+    echo ""
+    echo "------------------------------------------------------------------------------"
+    echo "update ffplayout engine"
+    echo "------------------------------------------------------------------------------"
+
+    cd /opt
+
+    if [[ $srcFromMaster == 'y' ]]; then
+        cd ffplayout_engine
+        git fetch
+
+        if [[ $(git rev-parse HEAD) == $(git rev-parse @{u}) ]]; then
+            echo "------------------------------------------------------------------------------"
+            echo "ffplayout engine is up to date"
+            echo "------------------------------------------------------------------------------"
+            return
+        fi
+
+        git pull
+    else
+        if [[ $versionEngine == $(cat ffplayout_engine/.version) ]]; then
+            echo "------------------------------------------------------------------------------"
+            echo "ffplayout engine is up to date"
+            echo "------------------------------------------------------------------------------"
+            return
+        else
+            echo $versionEngine > ffplayout_engine/.version
+        fi
+
+        wget https://github.com/ffplayout/ffplayout_engine/archive/${versionEngine}.tar.gz
+        tar xf "${versionEngine}.tar.gz"
+        yes | cp -rf ffplayout_engine-${versionEngine#'v'}/* ffplayout_engine/
+        rm "${versionEngine}.tar.gz"
+
+        cd ffplayout_engine
+    fi
+
+    source ./venv/bin/activate
+    pip install --upgrade -r requirements-base.txt
+
+    deactivate
+
+    echo ""
+    echo "------------------------------------------------------------------------------"
+    echo "When your engine was running, you have to restart it now!"
+    echo "------------------------------------------------------------------------------"
 fi

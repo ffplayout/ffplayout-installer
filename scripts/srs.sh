@@ -5,22 +5,23 @@ if [[ $(whoami) != 'root' ]]; then
     exit 1
 fi
 
-echo ""
-echo "------------------------------------------------------------------------------"
-echo "compile and install srs"
-echo "------------------------------------------------------------------------------"
+if [[ ! -d "/opt/srs" ]]; then
+    echo ""
+    echo "------------------------------------------------------------------------------"
+    echo "compile and install srs"
+    echo "------------------------------------------------------------------------------"
 
-cd /opt/
-git clone https://github.com/ossrs/srs.git
-cd srs/trunk/
-git checkout 3.0release
+    cd /opt/
+    git clone https://github.com/ossrs/srs.git
+    cd srs/trunk/
+    git checkout 3.0release
 
-./configure --use-sys-ssl
-make
-make install
+    ./configure --use-sys-ssl
+    make
+    make install
 
-mkdir -p "/var/www/srs/live"
-mkdir "/etc/srs"
+    mkdir -p "/var/www/srs/live"
+    mkdir "/etc/srs"
 
 cat <<EOF > "/etc/srs/srs.conf"
 listen              1935;
@@ -86,5 +87,26 @@ RestartSec=3
 WantedBy=multi-user.target
 EOF
 
-systemctl enable srs.service
-systemctl start srs.service
+    systemctl enable srs.service
+    systemctl start srs.service
+
+elif [[ $update ]]; then
+    cd /opt/srs
+    git fetch
+
+    if [[ $(git rev-parse HEAD) == $(git rev-parse @{u}) ]]; then
+        echo "------------------------------------------------------------------------------"
+        echo "srs is up to date"
+        echo "------------------------------------------------------------------------------"
+        return
+    fi
+
+    git pull
+
+    cd srs/trunk/
+    make uninstall
+
+    ./configure --use-sys-ssl
+    make
+    make install
+fi
