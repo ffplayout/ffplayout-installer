@@ -26,7 +26,8 @@ There is also a automated installation mode, where you can pass all values as an
     --channels=[y/n] \
     --master=[y/n] \
     --user=[username] \
-    --password=[password]
+    --password=[password] \
+    --update
 ```
 
 Run `./install.sh --help` for more information.
